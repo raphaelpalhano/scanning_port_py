@@ -47,7 +47,7 @@ def connect_send(code, port, dns):
 
 def verify_connection(dns, port):
     clientVerify = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    clientVerify.settimeout(0.40)
+    clientVerify.settimeout(0.2)
     code = clientVerify.connect_ex((dns, int(port)))
     return code
 
