@@ -12,7 +12,7 @@ def input_resourses():
     
     return ports, dns
 
-def verifyIfDnsOr(text):
+def verifyIfDnsOrIp(text):
     valid = False
     try:
         cut = str(text).split('.')
@@ -22,16 +22,26 @@ def verifyIfDnsOr(text):
         return valid    
 
 def connect_send(code, port, dns):
+    client = None
     if code == 0:
         print(f"CONNECT OPEN IN PORT {port} \n")
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if verifyIfDnsOr(dns):
+        if verifyIfDnsOrIp(dns):
+            client = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
             client.bind((dns, int(port)))
-        client.connect((dns, int(port)))
-        print("SENDING REQUEST...")
-        client.send(b"GET HTTP/1")
+            client.connect((dns, int(port)))
+            #print("SENDING REQUEST...")
+            #client.sendall(b"GET HTTP/1")
+            
+            
+        else:
+            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client.connect((dns, int(port)))
+            print("SENDING REQUEST...")
+            client.send(b"GET HTTP/1")
+        
         encondingResponse = client.recv(1024)
         decodeResponse = encondingResponse.decode("utf-8")
+     
         print(decodeResponse)
         if "400" in decodeResponse:
             print(f" \n IP/DNS : {dns}  \n PORT {port}  BAD CONNECTION! \n RESPONSE: \n {decodeResponse} \n")
